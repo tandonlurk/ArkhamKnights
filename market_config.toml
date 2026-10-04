@@ -1,21 +1,11 @@
-# Market cross-check settings (branch: market-cross-check).
-# Pull every value as of the model's pricing date.
-
 pricing_date = "2026-10-02"
-risk_free_rate = 0.04      # PLACEHOLDER: 1-year Treasury yield on the pricing date
-real_world_drift = 0.10    # Assumption: expected annual return for the "real-world" GBM variant
-dividend_yield = 0.0       # NCLH pays no dividend
+risk_free_rate = 0.0446    # 1-yr UST
+real_world_drift = 0.10
+dividend_yield = 0.0
 
 [implied_vol]
-# PLACEHOLDER: replace with NCLH's 1-year at-the-money implied vol on the pricing date.
-# Public figures found during setup, NOT as of the pricing date: ~61% 180-day mean IV
-# on Apr 2, 2026 (alphaquery.com) and ~55% ATM IV (optionsanalysissuite.com, undated).
-one_year_atm = 0.60
+one_year_atm = 0.542       # Sep-27 $15, mid
 
 [option_chain]
-# Better than a single vol: mid prices across strikes for the listed expiry closest to
-# 12 months out. The EXAMPLE file is SYNTHETIC (generated from Black-Scholes with a
-# made-up skew) so the script runs out of the box. Never present results from it.
-# Set path = "" to skip the chain and use the single implied vol only.
-path = "data/option_chain_EXAMPLE.csv"
+path = "data/nclh_chain_2027-09-17.csv"
 expiry = "2027-09-17"

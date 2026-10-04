@@ -1,10 +1,3 @@
-"""Market cross-check: options-implied probabilities vs. our scenario simulation.
-
-    python market_check.py                                   # market_config.toml + config.toml
-    python market_check.py --iv 0.58 --rate 0.041            # override the single implied vol / rate
-    python market_check.py --chain data/nclh_chain.csv --expiry 2027-09-17
-    python market_check.py --chain ""                        # single implied vol only
-"""
 import argparse
 import datetime as dt
 import json
@@ -15,16 +8,16 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
+import matplotlib.pyplot as plt
+import numpy as np
 
-from nclh_mc.inputs import load_inputs  # noqa: E402
-from nclh_mc.market import (  # noqa: E402
+from nclh_mc.inputs import load_inputs
+from nclh_mc.market import (
     chain_prob_above, conditional_probs, expected_value, gbm_prob_above, implied_vol,
     implied_weight, interp_prob_above, load_chain, model_prob, thresholds,
 )
-from nclh_mc.model import point_expected_value, point_targets  # noqa: E402
-from nclh_mc.simulate import simulate  # noqa: E402
+from nclh_mc.model import point_expected_value, point_targets
+from nclh_mc.simulate import simulate
 
 
 def pct(x):
@@ -47,7 +40,6 @@ def main():
         cfg = tomllib.load(f)
     with open(args.market_config, "rb") as f:
         mcfg = tomllib.load(f)
-    market_text = Path(args.market_config).read_text()
 
     iv = args.iv if args.iv is not None else mcfg["implied_vol"]["one_year_atm"]
     r = args.rate if args.rate is not None else mcfg["risk_free_rate"]
@@ -58,14 +50,7 @@ def main():
     pricing_date = dt.date.fromisoformat(mcfg["pricing_date"])
 
     warnings = []
-    if "PLACEHOLDER" in market_text and args.iv is None and args.rate is None:
-        warnings.append("market_config.toml still has PLACEHOLDER values (implied vol and/or rate).")
-    if any("PLACEHOLDER" in line for line in open(args.config)):
-        warnings.append("config.toml spreads are still PLACEHOLDERs, so the model side is illustrative.")
-    if chain_path and "EXAMPLE" in Path(chain_path).name.upper():
-        warnings.append("The option chain is the SYNTHETIC EXAMPLE file. Chain results are not real market data.")
 
-    # --- Model side -------------------------------------------------------------
     inp = load_inputs(args.workbook or cfg["workbook"])
     point = point_targets(inp)
     for s, t in point.items():
@@ -76,7 +61,6 @@ def main():
     weights = dict(inp.probabilities)
     scen_means = {n: float(price[scen == i].mean()) for i, n in enumerate(names)}
 
-    # --- Market side ------------------------------------------------------------
     T_iv = 1.0
     chain = None
     if chain_path:
@@ -106,7 +90,6 @@ def main():
             row["chain"] = float("nan") if math.isnan(pa) else market(pa)
         rows.append(row)
 
-    # --- Market-implied scenario weights ------------------------------------------
     source = "chain" if chain and abs(chain["T"] - 1) <= 0.25 else "gbm_risk_neutral"
     by_event = {r_["event"]: r_ for r_ in rows}
     up, down = by_event["Gain more than half"], by_event["Lose more than half"]
@@ -128,7 +111,6 @@ def main():
         "ev_current_weights": expected_value(weights, scen_means),
     }
 
-    # --- Console ----------------------------------------------------------------
     for w in warnings:
         print("WARNING:", w)
     print(f"\n{'Event':34s} {'Model':>7s} {'GBM rn':>7s} {'GBM rw':>7s} {'Chain':>7s}")
@@ -140,7 +122,6 @@ def main():
     print(f"To match the market's downside ({source}), bear weight would be {w_bear:.0%} "
           f"(now {weights['bear']:.0%}); target ${implied['ev_at_bear_weight']:.2f}")
 
-    # --- Outputs ----------------------------------------------------------------
     out = Path(args.out)
     out.mkdir(exist_ok=True)
     chart(price, S, iv, r, mu, chain, point, warnings, out / "market_vs_model.png")
@@ -166,8 +147,8 @@ def chart(price, S, iv, r, mu, chain, point, warnings, path):
     ax.plot(x, gbm_prob_above(S, x, 1.0, mu, iv) * 100, color="#8A8F98", lw=1.2, ls="--",
             label=f"GBM, {mu:.0%} expected return")
     if chain:
-        lab = "Option chain implied" + (" (EXAMPLE data)" if "EXAMPLE" in chain["path"].upper() else "")
-        ax.plot(chain["mids"], chain["probs"] * 100, "o-", color="#B23A48", ms=4, lw=1.2, label=lab)
+        ax.plot(chain["mids"], chain["probs"] * 100, "o-", color="#B23A48", ms=4, lw=1.2,
+                label="Option chain implied")
     ax.axvline(S, color="black", lw=1)
     ax.text(S, 101, f"Share price ${S:.2f}", ha="center", va="bottom", fontsize=9)
     ax.axvline(point["bull"], color="black", lw=0.8, ls=":")
@@ -176,10 +157,7 @@ def chart(price, S, iv, r, mu, chain, point, warnings, path):
     ax.set_ylim(0, 100)
     ax.set_xlabel("12-month price ($)")
     ax.set_ylabel("Chance the stock ends above this price (%)")
-    title = "Our model vs. the options market"
-    if warnings:
-        title += "  (illustrative: see warnings)"
-    ax.set_title(title, loc="left", fontsize=12, pad=22)
+    ax.set_title("Our model vs. the options market", loc="left", fontsize=12, pad=22)
     ax.spines[["top", "right"]].set_visible(False)
     ax.legend(frameon=False, fontsize=9, loc="upper right")
     fig.tight_layout()
@@ -198,9 +176,7 @@ def write_markdown(path, warnings, S, iv, r, mu, chain, rows, weights, point_ev,
                  f"at-the-money implied vol from the chain {chain['atm_iv']:.0%}.")
     L.append("\n")
     L.append("## Probabilities\n")
-    L.append("GBM = lognormal from the single implied vol. Chain = risk-neutral probabilities "
-             "from option prices across strikes (includes skew). Market columns are prices, not "
-             "forecasts; the real-world GBM column shows how little a higher expected return changes them.\n")
+    L.append("GBM: lognormal, single implied vol. Chain: risk-neutral, Breeden-Litzenberger across strikes.\n")
     L.append("| Event | Our model | GBM (risk-neutral) | GBM (real-world drift) | Option chain |")
     L.append("|---|---|---|---|---|")
     for r_ in rows:
@@ -221,11 +197,6 @@ def write_markdown(path, warnings, S, iv, r, mu, chain, rows, weights, point_ev,
     L.append(f"| Target | ${imp['ev_current_weights']:.2f} | ${imp['ev_at_bull_weight']:.2f} "
              f"| ${imp['ev_at_bear_weight']:.2f} |")
     L.append(f"\nWorkbook three-scenario target for reference: ${point_ev:.2f}.\n")
-    L.append("## How to read this\n")
-    L.append("The gap between our column and the market columns is our variant view. A long "
-             "thesis needs one, but each gap should be backed by a specific reason the market is "
-             "mispricing NCLH. Where we cannot explain a gap, the matching weight above is what "
-             "our target would be without that conviction.\n")
     with open(path, "w") as f:
         f.write("\n".join(L))
 

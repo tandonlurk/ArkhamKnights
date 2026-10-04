@@ -1,4 +1,3 @@
-"""Run with:  pytest -q"""
 import numpy as np
 import pytest
 
@@ -44,7 +43,7 @@ def test_puts_converted_by_parity_match_calls():
 
 def test_chain_probabilities_are_monotone_and_bounded():
     k, c, p = synthetic_chain(S, T, R, 0.6, 0.2, [1, 2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20, 25, 30, 40])
-    c = c + np.random.default_rng(0).normal(0, 0.03, len(c))  # quote noise
+    c = c + np.random.default_rng(0).normal(0, 0.03, len(c))
     _, probs = chain_prob_above(k, c, p, S, T, R)
     assert (probs >= 0).all() and (probs <= 1).all()
     assert (np.diff(probs) <= 1e-12).all()
