@@ -1,0 +1,72 @@
+{
+  "inputs": {
+    "implied_vol": 0.6,
+    "risk_free_rate": 0.04,
+    "real_world_drift": 0.1,
+    "chain": "data/option_chain_EXAMPLE.csv",
+    "chain_years": 0.9582477754962354,
+    "chain_atm_iv": 0.5820935380010201
+  },
+  "warnings": [
+    "market_config.toml still has PLACEHOLDER values (implied vol and/or rate).",
+    "config.toml spreads are still PLACEHOLDERs, so the model side is illustrative.",
+    "The option chain is the SYNTHETIC EXAMPLE file. Chain results are not real market data."
+  ],
+  "rows": [
+    {
+      "event": "Any loss",
+      "level": 15.14,
+      "side": "below",
+      "model": 0.34185,
+      "gbm_risk_neutral": 0.5922487117031047,
+      "gbm_real_world": 0.553035116623614,
+      "chain": 0.5075614882696454
+    },
+    {
+      "event": "Lose more than half",
+      "level": 7.57,
+      "side": "below",
+      "model": 0.2535,
+      "gbm_risk_neutral": 0.17828724809373564,
+      "gbm_real_world": 0.15341128385295577,
+      "chain": 0.18739907013319357
+    },
+    {
+      "event": "Gain more than half",
+      "level": 22.71,
+      "side": "above",
+      "model": 0.46526,
+      "gbm_risk_neutral": 0.18164642456494007,
+      "gbm_real_world": 0.20922636584448695,
+      "chain": 0.20984306806433337
+    },
+    {
+      "event": "Above base target ($17.67)",
+      "level": 17.666313823717363,
+      "side": "above",
+      "model": 0.59677,
+      "gbm_risk_neutral": 0.3118786252566897,
+      "gbm_real_world": 0.34807147280111006,
+      "chain": 0.3847889557417348
+    },
+    {
+      "event": "Above bull target ($30.30)",
+      "level": 30.303032261896718,
+      "side": "above",
+      "model": 0.22536,
+      "gbm_risk_neutral": 0.08228783979085713,
+      "gbm_real_world": 0.09855208550835948,
+      "chain": 0.06089600974949094
+    }
+  ],
+  "implied_weights": {
+    "source": "chain",
+    "bull_weight_matching_upside": 0.12147852301266342,
+    "bull_clamped": false,
+    "ev_at_bull_weight": 14.899236314164328,
+    "bear_weight_matching_downside": 0.18187727194518238,
+    "bear_clamped": false,
+    "ev_at_bear_weight": 20.189208000428405,
+    "ev_current_weights": 19.013000533018147
+  }
+}
