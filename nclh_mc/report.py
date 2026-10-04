@@ -1,11 +1,10 @@
-"""Write the chart, CSV tables and a markdown summary to results/."""
 import csv
 
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
+import matplotlib.pyplot as plt
+import numpy as np
 
 COLORS = {"bear": "#B23A48", "base": "#8A8F98", "bull": "#2E6F95"}
 
@@ -53,12 +52,8 @@ def _pct(x):
 
 
 def markdown_summary(inp, cfg, point, point_ev, s, rob, conv, path):
-    placeholder = any("PLACEHOLDER" in line for line in open(cfg["_path"]))
     L = []
     L.append("# NCLH Monte Carlo results\n")
-    if placeholder:
-        L.append("> **Spreads in config.toml are still marked PLACEHOLDER.** "
-                 "Replace them with sourced values before quoting these numbers.\n")
     L.append(f"Share price ${inp.share_price:.2f}. {cfg['draws']:,} draws, seed {cfg['seed']}, "
              f"downturn link rho = {cfg['downturn']['rho']}.\n")
 

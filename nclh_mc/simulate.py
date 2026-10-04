@@ -1,12 +1,3 @@
-"""Monte Carlo over the workbook's three scenarios.
-
-Each draw (1) picks bear, base or bull using the scenario probabilities from
-the Inputs tab, then (2) varies that scenario's drivers around its point
-assumptions using the spreads in config.toml, then (3) prices the draw with
-the same valuation chain as the workbook. The average across draws is
-sum over scenarios of P(scenario) x average price within that scenario,
-which is what the three-point SUMPRODUCT in the workbook approximates.
-"""
 import numpy as np
 
 from .model import point_expected_value, project
@@ -16,13 +7,7 @@ SHOCKED = ["yield_growth_2027", "yield_growth_2028", "ncc_growth_2027", "ncc_gro
 
 
 def draw_shocks(rng, n, rho, direction):
-    """Standard-normal shocks with a one-factor 'downturn' link.
-
-    shock_i = d_i * sqrt(rho) * M + sqrt(1 - d_i^2 * rho) * e_i
-    where M is a common downturn factor and d_i is -1, 0 or +1. Every shock
-    keeps a variance of 1, and linked drivers have correlation +/- rho.
-    """
-    common = rng.standard_normal(n)
+    common = rng.standard_normal(n)  # one-factor
     shocks = {}
     for name in SHOCKED:
         load = direction.get(name, 0) * np.sqrt(rho)
@@ -31,7 +16,6 @@ def draw_shocks(rng, n, rho, direction):
 
 
 def simulate(inp, cfg, draws=None, seed=None, spread_scale=1.0, rho=None):
-    """Return (prices, scenario index per draw, scenario names)."""
     draws = int(draws or cfg["draws"])
     seed = cfg["seed"] if seed is None else seed
     rho = cfg["downturn"]["rho"] if rho is None else rho
@@ -88,7 +72,6 @@ def summarize(price, scen, names, share_price):
 
 
 def robustness(inp, cfg):
-    """Expected value and risk stats across spread scales and downturn links."""
     point_ev = point_expected_value(inp)
     rows = []
     for rho in cfg["robustness"]["rhos"]:
@@ -110,7 +93,6 @@ def robustness(inp, cfg):
 
 
 def convergence(inp, cfg):
-    """How much the expected price and loss probability move between seeds."""
     rows = []
     for n in cfg["convergence"]["draw_counts"]:
         means, losses = [], []

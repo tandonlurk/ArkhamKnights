@@ -1,9 +1,3 @@
-"""Run the NCLH Monte Carlo.
-
-    python run.py                          # settings from config.toml
-    python run.py --rho 0.5                # linked-downturn stress case
-    python run.py --workbook path/to.xlsx --draws 200000 --skip-extras
-"""
 import argparse
 import json
 import tomllib
@@ -14,7 +8,7 @@ from nclh_mc.model import point_expected_value, point_targets
 from nclh_mc.report import histogram, markdown_summary, write_csv
 from nclh_mc.simulate import convergence, robustness, simulate, summarize
 
-TOLERANCE = 0.01  # $ per share
+TOLERANCE = 0.01  # $/share
 
 
 def main():
@@ -30,7 +24,6 @@ def main():
 
     with open(args.config, "rb") as f:
         cfg = tomllib.load(f)
-    cfg["_path"] = args.config
     for key in ("draws", "seed"):
         if getattr(args, key) is not None:
             cfg[key] = getattr(args, key)
@@ -39,7 +32,6 @@ def main():
 
     inp = load_inputs(args.workbook or cfg["workbook"])
 
-    # 1. Validate: the Python replica must reproduce the workbook's targets.
     point = point_targets(inp)
     for s, target in point.items():
         diff = abs(target - inp.excel_targets[s])
@@ -52,7 +44,6 @@ def main():
     print("Validation passed: Python reproduces the workbook's targets "
           + ", ".join(f"{s} ${v:.2f}" for s, v in point.items()) + f" (EV ${point_ev:.2f})")
 
-    # 2. Main simulation.
     price, scen, names = simulate(inp, cfg)
     s = summarize(price, scen, names, inp.share_price)
     print(f"Simulated expected value ${s['expected_price']:.2f} "
@@ -66,7 +57,6 @@ def main():
     with open(out / "summary.json", "w") as f:
         json.dump({"point_targets": point, "point_expected_value": point_ev, "simulation": s}, f, indent=2)
 
-    # 3. Robustness and convergence.
     rob, conv = [], []
     if not args.skip_extras:
         rob = robustness(inp, cfg)

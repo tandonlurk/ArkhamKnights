@@ -1,40 +1,28 @@
-# Monte Carlo settings for the NCLH 12-month valuation.
-#
-# Every value in [spreads] is a PLACEHOLDER chosen for illustration.
-# Replace each one with a sourced number before quoting results, and record
-# the source in the comment next to it (see "Setting the spreads" in README).
-
 workbook = "data/ArkhamKnights.xlsx"
 draws = 100000
 seed = 42
 
 [spreads]
-# One standard deviation of uncertainty, applied around each scenario's point
-# assumption from the Inputs tab. Scenario centers are never changed.
-yield_growth_2027 = 0.015  # PLACEHOLDER, 1.5 pts. Source idea: std dev of NCLH annual net yield growth, ex-2020-2022
-yield_growth_2028 = 0.015  # PLACEHOLDER, 1.5 pts
-ncc_growth_2027   = 0.010  # PLACEHOLDER, 1.0 pt. Source idea: NCC ex-fuel/day growth vs. initial guidance, past years
-ncc_growth_2028   = 0.010  # PLACEHOLDER, 1.0 pt
-fuel_price        = 80.0   # PLACEHOLDER, $/t. One shock applied to both 2027 and 2028. Source idea: 1-yr std dev of bunker fuel prices
-ats_2027          = 100.0  # PLACEHOLDER, $mm. Source idea: historical year-over-year swings in advance ticket sales
-discount          = 0.05   # PLACEHOLDER, 5 pts. Source idea: Comps tab range (~0.5% discount 2015-19, ~13% today)
-peer_multiple     = 0.0    # OFF. Set above 0 (turns of EBITDA) to let the whole RCL/CCL multiple move too
+# 1 SD
+yield_growth_2027 = 0.0345  # FY guidance misses, 2015-19, 2023-25
+yield_growth_2028 = 0.0571  # 2-yr horizon
+ncc_growth_2027   = 0.0264  # NCC ex-fuel guidance error
+ncc_growth_2028   = 0.0402  # 2-yr horizon
+fuel_price        = 120.80  # $/t, Brent vol
+ats_2027          = 57.35   # $mm, 10-K, ex-capacity
+discount          = 0.0     # within scenario spread
+peer_multiple     = 0.0
 
 [bounds]
-discount_min = -0.10       # allows up to a 10% premium to peers
+discount_min = -0.10
 discount_max = 0.50
 peer_multiple_min = 3.0
 fuel_price_min = 100.0
 
 [downturn]
-# How strongly the linked drivers move together when things go wrong.
-# 0 = independent (default), 1 = fully linked. Run 0.5 as a stress case.
-rho = 0.0
+rho = 0.0  # factor loading
 
 [downturn.direction]
-# Which way each driver moves in a downturn: -1 down, +1 up, 0 not linked.
-# Fuel and unit costs are left unlinked because their direction in a
-# downturn is ambiguous (a demand recession usually lowers fuel prices).
 yield_growth_2027 = -1
 yield_growth_2028 = -1
 ats_2027          = -1
@@ -45,13 +33,10 @@ ncc_growth_2028   = 0
 fuel_price        = 0
 
 [robustness]
-# Re-run the simulation with every spread scaled up or down, with and
-# without linked downturns, to show how much the answer depends on the spreads.
 spread_scales = [0.5, 1.0, 1.5, 2.0]
 rhos = [0.0, 0.5]
 draws = 100000
 
 [convergence]
-# How much results move between runs at each draw count.
 draw_counts = [1000, 10000, 100000, 1000000]
 seeds = 20
