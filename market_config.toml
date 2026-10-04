@@ -1,0 +1,11 @@
+pricing_date = "2026-10-02"
+risk_free_rate = 0.0446    # 1-yr UST
+real_world_drift = 0.10
+dividend_yield = 0.0
+
+[implied_vol]
+one_year_atm = 0.542       # Sep-27 $15, mid
+
+[option_chain]
+path = "data/nclh_chain_2027-09-17.csv"
+expiry = "2027-09-17"

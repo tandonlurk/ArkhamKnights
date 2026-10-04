@@ -6,7 +6,7 @@
 
 ## Model vs. GBM and the options market
 
-![GBM and options market](https://github.com/tandonlurk/ArkhamKnights/blob/market-cross-check/results/market_vs_model.png?raw=true)
+![GBM and options market](results/market_vs_model.png)
 
 ## Methodology 
 

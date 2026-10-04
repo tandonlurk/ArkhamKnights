@@ -1,0 +1,68 @@
+{
+  "inputs": {
+    "implied_vol": 0.542,
+    "risk_free_rate": 0.0446,
+    "real_world_drift": 0.1,
+    "chain": "data/nclh_chain_2027-09-17.csv",
+    "chain_years": 0.9582477754962354,
+    "chain_atm_iv": 0.5446414944783695
+  },
+  "warnings": [],
+  "rows": [
+    {
+      "event": "Any loss",
+      "level": 15.14,
+      "side": "below",
+      "model": 0.41184,
+      "gbm_risk_neutral": 0.5748407964442293,
+      "gbm_real_world": 0.5344647886561018,
+      "chain": 0.5454424264153579
+    },
+    {
+      "event": "Lose more than half",
+      "level": 7.57,
+      "side": "below",
+      "model": 0.28847,
+      "gbm_risk_neutral": 0.13782196045136408,
+      "gbm_real_world": 0.11655786743947893,
+      "chain": 0.11715163262140638
+    },
+    {
+      "event": "Gain more than half",
+      "level": 22.71,
+      "side": "above",
+      "model": 0.43216,
+      "gbm_risk_neutral": 0.1744300068871938,
+      "gbm_real_world": 0.20197464634160744,
+      "chain": 0.20082709585028544
+    },
+    {
+      "event": "Above base target ($17.67)",
+      "level": 17.666313823717363,
+      "side": "above",
+      "model": 0.54008,
+      "gbm_risk_neutral": 0.31795167273911107,
+      "gbm_real_world": 0.3552367259565741,
+      "chain": 0.3330675133326775
+    },
+    {
+      "event": "Above bull target ($30.30)",
+      "level": 30.303032261896718,
+      "side": "above",
+      "model": 0.26419,
+      "gbm_risk_neutral": 0.07091851292949225,
+      "gbm_real_world": 0.08584864827876981,
+      "chain": NaN
+    }
+  ],
+  "implied_weights": {
+    "source": "chain",
+    "bull_weight_matching_upside": 0.0,
+    "bull_clamped": true,
+    "ev_at_bull_weight": 13.972241464461828,
+    "bear_weight_matching_downside": 0.0021193771279906523,
+    "bear_clamped": false,
+    "ev_at_bear_weight": 23.322814280642937,
+    "ev_current_weights": 19.4442167268523
+  }
+}
