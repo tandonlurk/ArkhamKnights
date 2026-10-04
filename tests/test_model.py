@@ -1,4 +1,3 @@
-"""Run with:  pytest -q"""
 import copy
 import tomllib
 from pathlib import Path

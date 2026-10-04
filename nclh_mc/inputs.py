@@ -1,10 +1,3 @@
-"""Read model inputs from the team's Excel workbook.
-
-Rows are located by their label in column A rather than by cell address, so
-inserting or moving rows in the workbook will not silently break the
-simulation. We read the values Excel cached on its last save, so save the
-workbook in Excel after changing inputs and the simulation picks them up.
-"""
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -12,10 +5,9 @@ from openpyxl import load_workbook
 
 SCENARIOS = ("bear", "base", "bull")
 
-# Inputs sheet column layout (see the workbook headers).
-COL_2026, COL_2027, COL_2028 = 3, 4, 5        # sections 1, 3 and 5
-COL_2025A = 4                                   # section 2 (C=2024A, D=2025A)
-SCENARIO_COL = {"bear": 3, "base": 4, "bull": 5}  # discount / probability rows
+COL_2026, COL_2027, COL_2028 = 3, 4, 5
+COL_2025A = 4
+SCENARIO_COL = {"bear": 3, "base": 4, "bull": 5}
 SCENARIO_ROW_OFFSET = {"bear": 0, "base": 1, "bull": 2}
 
 
@@ -23,7 +15,6 @@ SCENARIO_ROW_OFFSET = {"bear": 0, "base": 1, "bull": 2}
 class ModelInputs:
     share_price: float
     shares_2028: float
-    # Operating base year
     capacity_2026: float
     capacity_growth_2027: float
     capacity_growth_2028: float
@@ -39,7 +30,6 @@ class ModelInputs:
     hedge_price_2027: float
     hedge_share_2028: float
     hedge_price_2028: float
-    # Cash flow items, 2026-2027
     net_debt_2025: float
     interest_2026: float
     interest_2027: float
@@ -52,14 +42,12 @@ class ModelInputs:
     other_capex_2027: float
     asset_sales_2026: float
     asset_sales_2027: float
-    # Valuation
     peer_multiple: float
     exchange_prices: tuple
     exchange_shares: tuple
-    # Scenario-specific
-    drivers: dict = field(default_factory=dict)        # scenario -> driver dict
-    probabilities: dict = field(default_factory=dict)  # scenario -> probability
-    excel_targets: dict = field(default_factory=dict)  # scenario -> $ target in Excel
+    drivers: dict = field(default_factory=dict)
+    probabilities: dict = field(default_factory=dict)
+    excel_targets: dict = field(default_factory=dict)
 
 
 def _find_row(ws, label):
@@ -81,7 +69,6 @@ def _val(ws, label, col):
 
 
 def _scenario_val(ws, label, scenario, col):
-    """Section 5 drivers: label on the bear row, base and bull on the next rows."""
     r = _find_row(ws, label) + SCENARIO_ROW_OFFSET[scenario]
     tag = str(ws.cell(r, 2).value).strip().lower()
     if tag != scenario:
